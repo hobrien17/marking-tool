@@ -59,17 +59,20 @@
                             <tbody>
                             {{#each fields}}
                                 <tr>
-                                    <td>{{name}}</td>
+                                    <td>{{name}} <br>(/{{#if good-mark}}{{good-mark}}{{else}}1{{/if}})</td>
                                     <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
-                                        data-group="{{../category}}" data-comment="{{good-comment}}" data-mark="1">
+                                        data-group="{{../category}}" data-comment="{{good-comment}}"
+                                        {{#if good-mark}}data-mark="{{good-mark}}"{{else}}data-mark="1"{{/if}}>
                                         {{breaklines good}}
                                     </td>
                                     <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
-                                        data-group="{{../category}}" data-comment="{{sat-comment}}" data-mark="0.5">
+                                        data-group="{{../category}}" data-comment="{{sat-comment}}"
+                                        {{#if sat-mark}}data-mark="{{sat-mark}}"{{else}}data-mark="0.5"{{/if}}>
                                         {{breaklines sat}}
                                     </td>
                                     <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
-                                        data-group="{{../category}}" data-comment="{{poor-comment}}" data-mark="0">
+                                        data-group="{{../category}}" data-comment="{{poor-comment}}" data-mark="0"
+                                        {{#if poor-mark}}data-mark="{{poor-mark}}"{{else}}data-mark="0"{{/if}}>
                                         {{breaklines poor}}
                                     </td>
                                     <td class="comment" data-criteria="{{name}}" data-group="{{../category}}">
@@ -185,8 +188,8 @@
 
         $('.criteria-header').each(function () {
             let group = $(this).data('group');
-            let sum = groupSum[group] || -1;
-            if (sum < 0) {
+            let sum = groupSum[group];
+            if (sum === undefined || sum < 0) {
                 sum = "?";
             }
             $(this).html(group + ": " + sum + "/" + $(this).data('total'));

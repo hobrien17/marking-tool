@@ -16,6 +16,7 @@ handlebars.registerHelper('breaklines', function (text) {
 
 const CRITERIA = JSON.parse(fs.readFileSync("criteria.json"));
 const STUDENTS = getDirectories("students");
+const MARKS_FILE = "marks-Q4.txt"
 
 function getDirectories(path) {
     let result = fs.readdirSync(path).filter(function (file) {
@@ -43,7 +44,7 @@ router.get('/', function (req, res, next) {
     let id = req.query.id;
     if (id === undefined) {
         for (let i = 0; i < STUDENTS.length; i++) {
-            if (fs.readFileSync(path.join(__dirname, "..", "students", STUDENTS[i], "marks.txt")).includes("?/")) {
+            if (fs.readFileSync(path.join(__dirname, "..", "students", STUDENTS[i], MARKS_FILE)).includes("?/")) {
                 id = STUDENTS[i];
                 break;
             }
@@ -81,7 +82,7 @@ router.get('/', function (req, res, next) {
         allContent.push({"name": pdfFiles[i]});
     }
 
-    let existingMarkFile = fs.readFileSync(path.join(__dirname, "..", "students", id, "marks.txt"))
+    let existingMarkFile = fs.readFileSync(path.join(__dirname, "..", "students", id, MARKS_FILE))
     let marked = !existingMarkFile.includes("?/");
     res.render('main', {
         title: 'Marking ' + id, id: id, criteria: CRITERIA, files: allContent, marked: marked,
@@ -93,7 +94,7 @@ router.post('/save', function (req, res, next) {
     let id = req.body["id"];
     let feedback = req.body["feedback"];
 
-    fs.writeFileSync(path.join(__dirname, "..", "students", id, "marks.txt"), feedback);
+    fs.writeFileSync(path.join(__dirname, "..", "students", id, MARKS_FILE), feedback);
     res.send(true);
 });
 
