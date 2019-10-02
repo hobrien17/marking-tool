@@ -36,7 +36,7 @@ Any Java or PDF files will be displayed to the right of the screen.
 Navigate between files using the tabbed menu. Other file formats, including directories,
 are not supported. If no files appear, you will have to manually view the files.
 
-### Notes
+## Notes
 - When the save button is pressed, marks are saved to the `marks.txt` file in the student folder
 - Existing `marks.txt` files are not loaded - if you revisit an already marked student
 the tool will label it as 'marked' but give you an empty criteria sheet
