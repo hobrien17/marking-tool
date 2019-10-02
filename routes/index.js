@@ -8,7 +8,7 @@ let router = express.Router();
 
 const isWin = process.platform === "win32";
 
-handlebars.registerHelper('breaklines', function(text) {
+handlebars.registerHelper('breaklines', function (text) {
     text = handlebars.Utils.escapeExpression(text);
     text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
     return new handlebars.SafeString(text);
@@ -34,7 +34,7 @@ function getFiles(path, ext) {
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     if (STUDENTS.length === 0) {
         next(createError(400, "No student files loaded"));
         return;
@@ -44,7 +44,6 @@ router.get('/', function(req, res, next) {
     if (id === undefined) {
         for (let i = 0; i < STUDENTS.length; i++) {
             if (fs.readFileSync(path.join(__dirname, "..", "students", STUDENTS[i], "marks.txt")).includes("?/")) {
-                console.log("yes");
                 id = STUDENTS[i];
                 break;
             }
@@ -82,37 +81,39 @@ router.get('/', function(req, res, next) {
         allContent.push({"name": pdfFiles[i]});
     }
 
-    console.log(allContent);
     let existingMarkFile = fs.readFileSync(path.join(__dirname, "..", "students", id, "marks.txt"))
     let marked = !existingMarkFile.includes("?/");
-    res.render('main', { title: 'Marking ' + id, id: id, criteria: CRITERIA, files: allContent, marked: marked,
-                         nextStudent: nextStudent, prevStudent: prevStudent });
+    res.render('main', {
+        title: 'Marking ' + id, id: id, criteria: CRITERIA, files: allContent, marked: marked,
+        nextStudent: nextStudent, prevStudent: prevStudent
+    });
 });
 
-router.post('/save', function(req, res, next) {
-   let id = req.body["id"];
-   let feedback = req.body["feedback"];
+router.post('/save', function (req, res, next) {
+    let id = req.body["id"];
+    let feedback = req.body["feedback"];
 
-   fs.writeFileSync(path.join(__dirname, "..", "students", id, "marks.txt"), feedback);
-   res.send(true);
+    fs.writeFileSync(path.join(__dirname, "..", "students", id, "marks.txt"), feedback);
+    res.send(true);
 });
 
-router.post('/open', function(req, res, next) {
-   if (isWin) {
-       res.send(false);
-   } else {
-       let child = exec('open students/' + req.body["dir"],
-           (error, stdout, stderr) => {
-               console.log(`stdout: ${stdout}`);
-               console.log(`stderr: ${stderr}`);
-               if (error !== null) {
-                   console.log(`exec error: ${error}`);
-                   res.send(false);
-               } else {
-                   res.send(true);
-               }
-           });
-   }
+router.post('/open', function (req, res, next) {
+    if (isWin) {
+        let cmd = 'open students/' + req.body["dir"];
+    } else {
+        let cmd = 'explorer students\\' + req.body["dir"];
+    }
+    let child = exec(cmd,
+        (error, stdout, stderr) => {
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+            if (error !== null) {
+                console.log(`exec error: ${error}`);
+                res.send(false);
+            } else {
+                res.send(true);
+            }
+        });
 });
 
 module.exports = router;
