@@ -1,0 +1,93 @@
+body {
+  background-color: #1a1a1d !important;
+  color: white !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  overflow: hidden;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.ui.segments {
+  border-color: black !important;
+}
+
+.ui.segment {
+  background-color: white !important;
+  color: black !important;
+  text-align: center !important;
+}
+
+.ui.segment h2 {
+  padding-top: 3px !important;
+}
+
+.ui.compact.segment {
+  min-width: 150px !important;
+}
+
+.ui.button {
+  width: 100%;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td.criteria.selected {
+  background-color: mediumspringgreen;
+  padding: 20px;
+}
+
+td.criteria.selected:hover {
+  background-color: #00dc7f;
+}
+
+td.criteria {
+  padding: 3px !important;
+  background-color: lightgrey;
+  cursor: pointer !important;
+  color: #1a1a1d !important;
+}
+
+td.criteria:hover {
+  background-color: #c4c4c4;
+}
+
+td.comment {
+  padding: 0 !important;
+}
+
+textarea {
+  min-height: 150px !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ui.menu .item {
+  color: white !important;
+}
+
+.ui.menu .item.active {
+  color: black !important;
+}
+
+.ui.tab.segment {
+  height: 78vh;
+  padding: 0;
+}
+
+.editor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+object {
+  width: 100%;
+  height: 100%;
+}

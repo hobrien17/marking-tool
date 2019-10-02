@@ -1,0 +1,307 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js"></script>
+
+<div class="ui sticky horizontal segments">
+    <div class="ui compact teal segment">
+        <button class="ui {{#unless prevStudent}}disabled{{/unless}} red button" onclick="prev();">
+            <i class="angle double left icon"></i> Prev
+        </button>
+    </div>
+    <div class="ui compact teal segment">
+        <button class="ui purple button" onclick="showFiles();">Open files</button>
+    </div>
+    <div class="ui left attached teal segment">
+        <h2 id="id">{{id}}</h2>
+    </div>
+    <div class="ui right attached teal segment">
+        <h2 id="marks"></h2>
+    </div>
+    <div class="ui left attached teal segment">
+        {{#if marked}}
+            <h2 id="markstatus" style="color: darkgreen;">Marked</h2>
+        {{else}}
+            <h2 id="markstatus" style="color: darkred;">Unmarked</h2>
+        {{/if}}
+    </div>
+    <div class="ui compact teal segment">
+        <button class="ui button" id="save" onclick="save();">Save &nbsp;&nbsp;&nbsp;<i class="save icon"></i></button>
+    </div>
+    <div class="ui compact teal segment">
+        <button class="ui {{#unless nextStudent}}disabled{{/unless}} green button" onclick="next();">
+            Next <i class="angle double right icon"></i>
+        </button>
+    </div>
+</div>
+
+<div class="ui two column grid">
+    <div class="column">
+        <div class="ui form">
+            <div class="ui vertical segments" style="overflow: auto; max-height: 85vh">
+                <div class="ui vertical segment">
+                    {{#each criteria}}
+                        <h2 class="criteria-header" data-group="{{category}}" data-total="{{total}}"></h2>
+
+                        <table class="ui celled table">
+                            <col width="12%">
+                            <col width="22%">
+                            <col width="22%">
+                            <col width="22%">
+                            <col width="22%">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Good (100%)</th>
+                                <th>Satisfactory (50%)</th>
+                                <th>Poor (0%)</th>
+                                <th>Comment</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {{#each fields}}
+                                <tr>
+                                    <td>{{name}}</td>
+                                    <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
+                                        data-group="{{../category}}" data-comment="{{good-comment}}" data-mark="1">
+                                        {{breaklines good}}
+                                    </td>
+                                    <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
+                                        data-group="{{../category}}" data-comment="{{sat-comment}}" data-mark="0.5">
+                                        {{breaklines sat}}
+                                    </td>
+                                    <td class="criteria" onclick="criteriaClick(this);" data-criteria="{{name}}"
+                                        data-group="{{../category}}" data-comment="{{poor-comment}}" data-mark="0">
+                                        {{breaklines poor}}
+                                    </td>
+                                    <td class="comment" data-criteria="{{name}}" data-group="{{../category}}">
+                                        <textarea onchange="$('#save').addClass('blue');"></textarea>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="ui top attached tabular menu" style="overflow: auto;">
+            {{#each files}}
+                {{#if @first}}
+                    <a class="active item" data-tab="{{name}}">{{name}}</a>
+                {{else}}
+                    <a class="item" data-tab="{{name}}">{{name}}</a>
+                {{/if}}
+            {{/each}}
+        </div>
+        {{#each files}}
+            {{#if @first}}
+                <div class="ui bottom attached active tab segment" data-tab="{{name}}">
+                    {{#if content}}
+                        <div class="editor" id="{{name}}-editor">{{content}}</div>
+                    {{else}}
+                        <object data="/students/{{../id}}/{{name}}" type="application/pdf">
+                            Your browser does not support pdfs, <a href="/students/{{../id}}/{{name}}">click here to
+                            download the file.</a>
+                        </object>
+                    {{/if}}
+                </div>
+            {{else}}
+                <div class="ui bottom attached tab segment" data-tab="{{name}}">
+                    {{#if content}}
+                        <div class="editor" id="{{name}}-editor">{{content}}</div>
+                    {{else}}
+                        <object data="/students/{{../id}}/{{name}}" type="application/pdf">
+                            Your browser does not support pdfs, <a href="/students/{{../id}}/{{name}}">click here to
+                            download the file.</a>
+                        </object>
+                    {{/if}}
+                </div>
+            {{/if}}
+        {{/each}}
+    </div>
+</div>
+
+<div id="popup" class="ui modal" style="width: 270px;">
+    <i class="close icon"></i>
+    <div class="header">
+        Save before continuing?
+    </div>
+        <div class="ui icon buttons" style="margin: 10px;">
+            <button id="popupno" class="ui red button" onclick="$('#popup').modal('hide');">No <i class="close icon"></i></button>
+            <button id="popupyes" class="ui green button">Yes <i class="check icon"></i></button>
+        </div>
+</div>
+
+<script>
+    setupEditors();
+    computeGrade();
+    $('.menu .item').tab();
+    $('.ui.modal').modal();
+
+    function setupEditors() {
+        let editor;
+        {{#each files}}
+            {{#if content}}
+                console.log("{{name}}");
+                editor = ace.edit("{{name}}-editor");
+                editor.setTheme("ace/theme/monokai");
+                editor.session.setMode("ace/mode/java");
+            {{/if}}
+        {{/each}}
+    }
+
+    function computeGrade() {
+        let sum = 0;
+        let groupSum = {};
+        let criteriasFilled = [];
+
+        // compute the sum and the sum of each group
+        $('.criteria').each(function () {
+            if ($(this).hasClass("selected")) {
+                let mark = parseFloat($(this).data('mark'));
+                let group = $(this).data('group');
+                sum += mark;
+                groupSum[group] = (groupSum[group] || 0) + mark;
+                criteriasFilled.push($(this).data('criteria'));
+            }
+        });
+
+        // compute the maximum possible marks
+        let total = 0;
+        {{#each criteria}}
+            total += {{total}};
+
+            // remove any groups that aren't finished yet
+            {{#each fields}}
+                if (!criteriasFilled.includes("{{name}}")) {
+                    groupSum["{{../category}}"] = -1;
+                }
+            {{/each}}
+        {{/each}}
+
+        $('#marks').html(sum + "/" + total);
+
+        $('.criteria-header').each(function () {
+            let group = $(this).data('group');
+            let sum = groupSum[group] || -1;
+            if (sum < 0) {
+                sum = "?";
+            }
+            $(this).html(group + ": " + sum + "/" + $(this).data('total'));
+        })
+    }
+
+    function criteriaClick(elem) {
+        $('.criteria').each(function () {
+            if ($(this).data('criteria') === $(elem).data('criteria')) {
+                $(this).removeClass("selected");
+            }
+        });
+
+        $('.comment').each(function () {
+            if ($(this).data('criteria') === $(elem).data('criteria')) {
+                $(this).find('textarea').val($(elem).data('comment'));
+            }
+        });
+
+        $(elem).addClass("selected");
+
+        computeGrade();
+        $('#save').addClass("blue");
+    }
+
+    function save(async=true) {
+        let result = "";
+        let criteriaHeader = {};
+        let criteriaComments = {};
+
+        $('.criteria-header').each(function () {
+            criteriaHeader[$(this).data('group')] = $(this).html();
+        });
+        $('.comment').each(function () {
+            let comment = $(this).find('textarea').val();
+            let group = $(this).data('group');
+            if (comment.length > 0) {
+                if (!criteriaComments.hasOwnProperty(group)) {
+                    criteriaComments[group] = [];
+                }
+                criteriaComments[group].push(comment);
+            }
+        });
+
+        let complete = true;
+        {{#each criteria}}
+            complete = complete && !criteriaHeader['{{category}}'].includes("?/");
+            result += criteriaHeader['{{category}}'] + "\n";
+            console.log(criteriaComments);
+            result += criteriaComments['{{category}}'].join("\n") + "\n";
+            result += "\n";
+        {{/each}}
+
+        if (complete) {
+            let elem = $('#markstatus');
+            elem.css("color", "darkgreen");
+            elem.html("Marked");
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/save",
+            data: {
+                "id": "{{id}}",
+                "feedback": result
+            },
+            traditional: true,
+            async: async,
+            success: function (msg) {
+                $('#save').removeClass("blue");
+            }
+        });
+    }
+
+    function showFiles() {
+        $.ajax({
+            type: "POST",
+            url: "/open",
+            data: {
+                "dir": "{{id}}"
+            },
+            traditional: true,
+        });
+    }
+
+    function saveWarn(callback) {
+        if ($('#save').hasClass('blue')) {
+            let popup = $('#popup');
+            $('#popupyes').click(function () {
+                save(async=false);
+                popup.modal('hide');
+                callback();
+            });
+            $('#popupno').click(function () {
+                $('#save').removeClass("blue");
+                popup.modal('hide');
+                callback();
+            });
+
+            popup.modal('show');
+            return false;
+        }
+        return true;
+    }
+
+    function prev() {
+        if (saveWarn(prev)) {
+            location.href = "/?id={{prevStudent}}";
+        }
+    }
+
+    function next() {
+        if (saveWarn(next)) {
+            location.href = "/?id={{nextStudent}}";
+        }
+    }
+
+</script>
