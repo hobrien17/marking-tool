@@ -52,6 +52,10 @@ td.criteria {
   color: #1a1a1d !important;
 }
 
+th {
+  text-align: center !important;
+}
+
 td.criteria:hover {
   background-color: #c4c4c4;
 }

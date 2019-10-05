@@ -99,10 +99,11 @@ router.post('/save', function (req, res, next) {
 });
 
 router.post('/open', function (req, res, next) {
+    let cmd = "";
     if (isWin) {
-        let cmd = 'open students/' + req.body["dir"];
+        cmd = 'explorer students\\' + req.body["dir"];
     } else {
-        let cmd = 'explorer students\\' + req.body["dir"];
+        cmd = 'open students/' + req.body["dir"];
     }
     let child = exec(cmd,
         (error, stdout, stderr) => {

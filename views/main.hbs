@@ -48,7 +48,11 @@
                             <col width="22%">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th><div class="ui toggle checkbox" style="padding-top: 5px; padding-left: 10px">
+                                    <input id="show-{{category}}" type="checkbox" checked="checked"
+                                           onclick="tableToggle('{{category}}')">
+                                    <label></label>
+                                </div></th>
                                 <th>Good (100%)</th>
                                 <th>Satisfactory (50%)</th>
                                 <th>Poor (0%)</th>
@@ -56,7 +60,7 @@
                             </tr>
                             </thead>
 
-                            <tbody>
+                            <tbody id="table-{{category}}">
                             {{#each fields}}
                                 <tr>
                                     <td>{{name}} <br>(/{{#if good-mark}}{{good-mark}}{{else}}1{{/if}})</td>
@@ -80,6 +84,11 @@
                                     </td>
                                 </tr>
                             {{/each}}
+                            </tbody>
+                            <tbody id="hidden-{{category}}" style="display:none">
+                                <tr>
+                                    <td colspan="5" style="text-align: center">No reasonable attempt made</td>
+                                </tr>
                             </tbody>
                         </table>
                     {{/each}}
@@ -182,6 +191,11 @@
                     groupSum["{{../category}}"] = -1;
                 }
             {{/each}}
+
+            // if anything is hidden give it an auto 0
+            if (!$("#show-{{category}}").is(":checked")) {
+                groupSum["{{category}}"] = 0;
+            }
         {{/each}}
 
         $('#marks').html(sum + "/" + total);
@@ -193,7 +207,16 @@
                 sum = "?";
             }
             $(this).html(group + ": " + sum + "/" + $(this).data('total'));
-        })
+        });
+    }
+
+    function tableToggle(category) {
+        let toggleSwitch = $("#show-" + category);
+        console.log(toggleSwitch);
+        $("#table-" + category).toggle(toggleSwitch.is(":checked"));
+        $("#hidden-" + category).toggle(!toggleSwitch.is(":checked"));
+        computeGrade();
+        $('#save').addClass("blue");
     }
 
     function criteriaClick(elem) {
@@ -238,8 +261,11 @@
         {{#each criteria}}
             complete = complete && !criteriaHeader['{{category}}'].includes("?/");
             result += criteriaHeader['{{category}}'] + "\n";
-            console.log(criteriaComments);
-            result += criteriaComments['{{category}}'].join("\n") + "\n";
+            if ($("#show-{{category}}").is(":checked")) {
+                result += criteriaComments['{{category}}'].join("\n") + "\n";
+            } else {
+                result += "No reasonable attempt made\n";
+            }
             result += "\n";
         {{/each}}
 
