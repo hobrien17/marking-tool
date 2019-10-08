@@ -260,11 +260,10 @@
 
         let complete = true;
         {{#each criteria}}
-            category = category.replace(" ", "");
             complete = complete && !criteriaHeader['{{category}}'].includes("?/");
             result += "## " + criteriaHeader['{{category}}'] + "\n";
             if ($("#show-{{compress category}}").is(":checked")) {
-                result += criteriaComments['{{category}}'].join("\n") + "\n";
+                result += (criteriaComments['{{category}}'] || []).join("\n") + "\n";
             } else {
                 result += "No reasonable attempt made\n";
             }
