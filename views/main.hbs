@@ -98,7 +98,7 @@
     </div>
 
     <div class="column">
-        <div class="ui top attached tabular menu" style="overflow: auto;">
+        <div class="ui top attached tabular menu" style="overflow-x: auto; overflow-y: hidden;">
             {{#each files}}
                 {{#if @first}}
                     <a class="active item" data-tab="{{name}}">{{name}}</a>
@@ -260,7 +260,7 @@
         let complete = true;
         {{#each criteria}}
             complete = complete && !criteriaHeader['{{category}}'].includes("?/");
-            result += criteriaHeader['{{category}}'] + "\n";
+            result += "## " + criteriaHeader['{{category}}'] + "\n";
             if ($("#show-{{category}}").is(":checked")) {
                 result += criteriaComments['{{category}}'].join("\n") + "\n";
             } else {
