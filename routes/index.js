@@ -14,6 +14,10 @@ handlebars.registerHelper('breaklines', function (text) {
     return new handlebars.SafeString(text);
 });
 
+handlebars.registerHelper('compress', function(string) {
+    return string.replace(/ /g, '_');
+});
+
 const CRITERIA = JSON.parse(fs.readFileSync("criteria.json"));
 const STUDENTS = getDirectories("students");
 const MARKS_FILE = "marks.txt"

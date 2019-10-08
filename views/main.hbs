@@ -49,7 +49,7 @@
                             <thead>
                             <tr>
                                 <th><div class="ui toggle checkbox" style="padding-top: 5px; padding-left: 10px">
-                                    <input id="show-{{category}}" type="checkbox" checked="checked"
+                                    <input id="show-{{compress category}}" type="checkbox" checked="checked"
                                            onclick="tableToggle('{{category}}')">
                                     <label></label>
                                 </div></th>
@@ -60,7 +60,7 @@
                             </tr>
                             </thead>
 
-                            <tbody id="table-{{category}}">
+                            <tbody id="table-{{compress category}}">
                             {{#each fields}}
                                 <tr>
                                     <td>{{name}} <br>(/{{#if good-mark}}{{good-mark}}{{else}}1{{/if}})</td>
@@ -85,7 +85,7 @@
                                 </tr>
                             {{/each}}
                             </tbody>
-                            <tbody id="hidden-{{category}}" style="display:none">
+                            <tbody id="hidden-{{compress category}}" style="display:none">
                                 <tr>
                                     <td colspan="5" style="text-align: center">No reasonable attempt made</td>
                                 </tr>
@@ -193,7 +193,8 @@
             {{/each}}
 
             // if anything is hidden give it an auto 0
-            if (!$("#show-{{category}}").is(":checked")) {
+            if (!($("#show-{{compress category}}").is(":checked"))) {
+                console.log($("#show-{{compress category}}").is(":checked"));
                 groupSum["{{category}}"] = 0;
             }
         {{/each}}
@@ -211,8 +212,8 @@
     }
 
     function tableToggle(category) {
+        category = category.replace(" ", "_");
         let toggleSwitch = $("#show-" + category);
-        console.log(toggleSwitch);
         $("#table-" + category).toggle(toggleSwitch.is(":checked"));
         $("#hidden-" + category).toggle(!toggleSwitch.is(":checked"));
         computeGrade();
@@ -259,9 +260,10 @@
 
         let complete = true;
         {{#each criteria}}
+            category = category.replace(" ", "");
             complete = complete && !criteriaHeader['{{category}}'].includes("?/");
             result += "## " + criteriaHeader['{{category}}'] + "\n";
-            if ($("#show-{{category}}").is(":checked")) {
+            if ($("#show-{{compress category}}").is(":checked")) {
                 result += criteriaComments['{{category}}'].join("\n") + "\n";
             } else {
                 result += "No reasonable attempt made\n";
