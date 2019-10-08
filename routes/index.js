@@ -16,7 +16,7 @@ handlebars.registerHelper('breaklines', function (text) {
 
 const CRITERIA = JSON.parse(fs.readFileSync("criteria.json"));
 const STUDENTS = getDirectories("students");
-const MARKS_FILE = "marks-Q4.txt"
+const MARKS_FILE = "marks.txt"
 
 function getDirectories(path) {
     let result = fs.readdirSync(path).filter(function (file) {

@@ -32,10 +32,6 @@ a {
   width: 100%;
 }
 
-table {
-  border-collapse: collapse;
-}
-
 td.criteria.selected {
   background-color: mediumspringgreen;
   padding: 20px;
@@ -52,8 +48,25 @@ td.criteria {
   color: #1a1a1d !important;
 }
 
+table {
+  height: 100% !important;
+  border-collapse: collapse;
+}
+
+tbody {
+  height: 100% !important;
+}
+
 th {
   text-align: center !important;
+}
+
+tr {
+  height: 100% !important;
+}
+
+td {
+  height: 100% !important;
 }
 
 td.criteria:hover {
@@ -62,10 +75,11 @@ td.criteria:hover {
 
 td.comment {
   padding: 0 !important;
+  height: 100% !important;
 }
 
 textarea {
-  min-height: 150px !important;
+  /*min-height: 150px !important;*/
   width: 100% !important;
   height: 100% !important;
 }
