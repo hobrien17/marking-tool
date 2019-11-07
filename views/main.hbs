@@ -212,7 +212,8 @@
     }
 
     function tableToggle(category) {
-        category = category.replace(" ", "_");
+        category = category.replace(/ /g, '_');
+        console.log(category)
         let toggleSwitch = $("#show-" + category);
         $("#table-" + category).toggle(toggleSwitch.is(":checked"));
         $("#hidden-" + category).toggle(!toggleSwitch.is(":checked"));
